@@ -1,0 +1,60 @@
+[project]
+name = "mader"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Luiznuness",email = "lg.nunes.souza2006@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12, <4.0"
+dependencies = [
+    "sqlalchemy[asyncio] (>=2.0.41,<3.0.0)",
+    "psycopg[binary] (>=3.2.9,<4.0.0)",
+    "fastapi[standard] (>=0.116.1,<0.117.0)",
+    "pydantic-settings (>=2.10.1,<3.0.0)",
+    "pyjwt (>=2.10.1,<3.0.0)",
+    "pwdlib[argon2] (>=0.2.1,<0.3.0)",
+    "freezegun (>=1.5.3,<2.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.4"
+pytest = "^8.4.1"
+pytest-cov = "^6.2.1"
+testcontainers = "^4.10.0"
+pytest-asyncio = "^1.1.0"
+taskipy = "^1.14.1"
+factory-boy = "^3.3.3"
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PT', 'FAST']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+[tool.pytest.ini_options]
+pythonpath = '.'
+addopts = '-p no:warnings'
+asyncio_default_fixture_loop_scope = 'function'
+
+[tool.coverage.run]
+concurrency = ["thread", "greenlet"]
+
+[tool.taskipy.tasks]
+lint = 'ruff check'
+pre_format = 'ruff check --fix'
+run = 'fastapi dev mader/app.py'
+format = 'ruff format'
+test = 'pytest -s -x --cov=mader -vv'
+post_test = 'coverage html'

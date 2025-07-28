@@ -1,0 +1,38 @@
+services:
+  mader_database:
+    image: postgres
+    environment:
+      POSTGRES_USER: app_user 
+      POSTGRES_DB: app_db
+      POSTGRES_PASSWORD: app_password
+    ports:
+      - "5432:5432"
+    # Isso tem que ser alterado, utilizado somente pra test
+    network_mode: host
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  mader_app:
+    build: .
+    volumes:
+      - /run/systemd/resolve/resolv.conf:/etc/resolv.conf:ro
+    ports:
+      - "8000:8000"
+    # Isso tem que ser alterado, utilizado somente pra test
+    network_mode: host
+    depends_on:
+      - mader_database
+    environment:
+      DATABASE_URL: "postgresql+psycopg://app_user:app_password@localhost:5432/app_db"
+volumes:
+  pgdata:
+
+# O fastasync_app é utilizado para:
+  # Sobe a imagem da minha aplicação na porta 8000:8000
+  # Para que esse container seja 'upado' ele tem que updar primeiro o mader_database
+
+# O mader_database é utilizado para:
+  # Sobe uma imagem do postgres na porta 5432:5432
+
+# O entrypoint é utilizado para:
+  # Executar um arquivo .sh todas as vezes que o docker compose é acionado.
+  # Os comando basicamente sobre as migrações do banco de dados e depois sobe a aplicação com uvicorn
