@@ -63,9 +63,6 @@ O relatório HTML será gerado em `htmlcov/index.html`.
 
 ```
 mader
-│   ├── __init__.py
-│   ├── app.py
-│   ├── database.py
 │   ├── models
 │   │   ├── __init__.py
 │   │   ├── Autores.py
@@ -75,9 +72,6 @@ mader
 │   │   ├── auth.py
 │   │   ├── autores.py
 │   │   ├── livros.py
-│   ├── schemas.py
-│   ├── security.py
-│   ├── settings.py
 │   ├── tests
 │   │   ├── __init__.py
 │   │   ├── conftest.py
@@ -87,6 +81,12 @@ mader
 │   │   ├── test_db.py
 │   │   ├── test_livros.py
 │   │   ├── test_user.py
+│   ├── __init__.py
+│   ├── database.py
+│   ├── security.py
+│   ├── settings.py
+│   ├── schemas.py
+│   ├── app.py
 ├── poetry.lock
 ├── pyproject.toml
 ├── README.md
