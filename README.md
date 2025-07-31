@@ -62,21 +62,36 @@ O relatório HTML será gerado em `htmlcov/index.html`.
 ## Estrutura do Projeto
 
 ```
-mader/
-  app.py
-  database.py
-  models/
-  routers/
-  schemas.py
-  security.py
-  settings.py
-tests/
-  test_app.py
-  test_auth.py
-  test_autores.py
-  test_db.py
-  test_livros.py
-  test_user.py
+mader
+│   ├── __init__.py
+│   ├── app.py
+│   ├── database.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── Autores.py
+│   │   ├── base_model.py
+│   │   ├── Livros.py
+│   ├── routers
+│   │   ├── auth.py
+│   │   ├── autores.py
+│   │   ├── livros.py
+│   ├── schemas.py
+│   ├── security.py
+│   ├── settings.py
+│   ├── tests
+│   │   ├── __init__.py
+│   │   ├── conftest.py
+│   │   ├── test_app.py
+│   │   ├── test_auth.py
+│   │   ├── test_autores.py
+│   │   ├── test_db.py
+│   │   ├── test_livros.py
+│   │   ├── test_user.py
+├── poetry.lock
+├── pyproject.toml
+├── README.md
+├── compose.yaml
+├── Dockerfile
 ```
 
 ## Endpoints Principais
