@@ -94,6 +94,7 @@ async def test_get_autor_id(session, token, client):
         'name': 'Napolen Hill',
     }
 
+
 def test_put_autor_id(client, token):
     autor = client.post(
         '/autores/',
@@ -104,7 +105,7 @@ def test_put_autor_id(client, token):
     )
 
     response = client.put(
-        f'/autores/{autor.json()['id']}',
+        f'/autores/{autor.json()["id"]}',
         json={
             'name': 'Napoleon Hill',
         },
@@ -116,3 +117,64 @@ def test_put_autor_id(client, token):
         'id': 1,
         'name': 'Napoleon Hill',
     }
+
+
+def test_delete_autor(client, token):
+    client.post(
+        '/autores',
+        json={'name': 'napoleon hill'},
+        headers={'authorization': f'Bearer {token}'},
+    )
+
+    response = client.delete(
+        '/autores/1',
+        headers={'authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {'message': 'Autor deleted'}
+
+
+def test_error_created_autor(client, token, autor):
+    response = client.post(
+        '/autores',
+        json={'name': 'napoleon hill'},
+        headers={'authorization': f'Bearer {token}'},
+    )
+
+
+    assert response.status_code == HTTPStatus.CONFLICT
+    assert response.json() == {'detail': 'Autor already exists'}
+
+
+def test_error_get_autor(client, token, autor):
+    response = client.get(
+        f'autores/{autor.id + 1}',
+        headers={'authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Autor not found'}
+
+
+def test_error_put_autor(client, token, autor):
+    response = client.put(
+        f'autores/{autor.id + 1}',
+        json={
+            'name': 'alice',
+        },
+        headers={'authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Autor not found'}
+
+
+def test_error_delete_autor(client, token, autor):
+    response = client.delete(
+        f'autores/{autor.id + 1}',
+        headers={'authorization': f'Bearer {token}'},
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'Autor not found'}

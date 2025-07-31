@@ -2,8 +2,8 @@ import factory
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
+from sqlalchemy import StaticPool
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from testcontainers.postgres import PostgresContainer
 
 from mader import _settings as Settings
 from mader.app import app
@@ -11,6 +11,7 @@ from mader.database import get_session
 from mader.models.Autores import Autores
 from mader.models.base_model import Base
 from mader.models.User import User
+from mader.models.Livros import Livros
 from mader.security import get_password_hash
 
 
@@ -26,15 +27,23 @@ def client(session):
     app.dependency_overrides.clear()
 
 
-@pytest.fixture(scope='session')
-def engine():
-    with PostgresContainer('postgres:17', driver='psycopg') as postgres:
-        Settings.TEST = True
-        yield create_async_engine(postgres.get_connection_url())
+# @pytest.fixture(scope='session')
+# def engine():
+#     with PostgresContainer('postgres:17', driver='psycopg') as postgres:
+#         Settings.TEST = True
+#         yield create_async_engine(postgres.get_connection_url())
 
 
 @pytest_asyncio.fixture
-async def session(engine):
+async def session():
+    Settings.TEST = True
+
+    engine = create_async_engine(
+        'sqlite+aiosqlite:///:memory:',
+        connect_args={'check_same_thread': False},
+        poolclass=StaticPool,
+    )
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -86,8 +95,22 @@ async def other_user(session):
 
 
 @pytest_asyncio.fixture
+async def livro(session, autor):
+    db_livros = Livros(
+        ano = 1937,
+        titulo = 'Pense Enriqueça',
+        id_autor = autor.id,
+    )
+
+    session.add(db_livros)
+    await session.commit()
+    await session.refresh(db_livros)
+
+    return db_livros
+
+@pytest_asyncio.fixture
 async def autor(session):
-    db_autores = Autores(name='Napolen Hill')
+    db_autores = Autores(name='Napoleon Hill')
 
     session.add(db_autores)
     await session.commit()

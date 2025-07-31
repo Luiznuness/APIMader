@@ -18,6 +18,7 @@ from mader.schemas import (
     AutorPublic,
     FilterAutor,
     ListAutorPublic,
+    Message,
 )
 from mader.security import get_current_user
 
@@ -122,3 +123,29 @@ async def put_autor(
     await session.refresh(db_autor)
 
     return db_autor
+
+
+@routers.delete(
+    '/{id_autor}',
+    status_code=HTTPStatus.OK,
+    response_model=Message,
+)
+async def delete_autor(
+    id_autor: int,
+    session: T_Session,
+    current_user: CurrentUser,
+):
+    db_autor = await session.scalar(
+        select(Autores).where(Autores.id == id_autor)
+    )
+
+    if not db_autor:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail='Autor not found',
+        )
+
+    await session.delete(db_autor)
+    await session.commit()
+
+    return {'message': 'Autor deleted'}
